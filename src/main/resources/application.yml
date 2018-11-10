@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:./build/database/db;AUTO_SERVER=TRUE
+    username: user
+    password: password
+
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core: info
