@@ -4,15 +4,17 @@ import com.antoinecampbell.springjdbc.util.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.net.URI;
 
 @RestController
 @RequestMapping("/items")
@@ -32,9 +34,13 @@ public class ItemController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity insertItem(@RequestBody @Valid Item item) {
-        long id = itemRepository.insertItem(item);
-        return ResponseEntity.created(URI.create(String.format("/items/%d", id))).build();
+    public ResponseEntity<Item> insertItem(@RequestBody @Valid Item item, UriComponentsBuilder uriComponentsBuilder) {
+        Item insertedItem = itemRepository.insertItem(item);
+        String itemUri = uriComponentsBuilder.path(String.format("/items/%d", insertedItem.getId())).toUriString();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.LOCATION, itemUri);
+
+        return new ResponseEntity<>(insertedItem, headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)

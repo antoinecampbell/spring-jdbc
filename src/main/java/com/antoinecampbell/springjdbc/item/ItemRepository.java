@@ -20,7 +20,7 @@ public class ItemRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long insertItem(Item item) {
+    public Item insertItem(Item item) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
                 .withTableName("item")
                 .usingGeneratedKeyColumns("id");
@@ -29,7 +29,7 @@ public class ItemRepository {
         params.put("description", item.getDescription());
         Number key = jdbcInsert.executeAndReturnKey(params);
 
-        return key.longValue();
+        return getItem(key.longValue());
     }
 
     public void updateItem(long id, Item item) {
