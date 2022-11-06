@@ -26,7 +26,9 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
-      - uses: actions/upload-artifact@v3
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
         with:
-          name: test-report
-          path: build/reports/
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          detailed_summary: true
